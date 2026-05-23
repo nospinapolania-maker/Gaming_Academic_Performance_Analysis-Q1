@@ -5,7 +5,7 @@
 # Gaming Academic Performance · Student Behavior Intelligence
 
 **Analisis de habitos de gaming, estudio, descanso y rendimiento academico**  
-*Construido con PostgreSQL · Python · Power BI-ready · SQL Analytics*
+*Construido con MySQL · Python · Power BI-ready · SQL Analytics*
 
 <br/>
 
