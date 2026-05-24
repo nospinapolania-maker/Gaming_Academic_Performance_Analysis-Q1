@@ -2,17 +2,17 @@
 
 <img src="assets/header_banner.svg" alt="Gaming Academic Performance Dashboard" width="100%"/>
 
-# Gaming Academic Performance · Student Behavior Intelligence
+# Gaming Academic Performance - Student Behavior Intelligence
 
 **Analisis de habitos de gaming, estudio, descanso y rendimiento academico**  
-*Construido con MySQL · Python · Power BI-ready · SQL Analytics*
+*Construido con Power Query - Excel - MySQL - Power BI-ready - SQL Analytics*
 
 <br/>
 
-[![SQL](https://img.shields.io/badge/SQL-MySQL-4169E1?style=for-the-badge&logo=myql&logoColor=white)](https://https://www.mysql.com/_)
-[![Python](https://img.shields.io/badge/Python-Analysis%20Pipeline-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Power Query](https://img.shields.io/badge/Power%20Query-ETL%20Cleaning-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://powerquery.microsoft.com/)
+[![SQL](https://img.shields.io/badge/SQL-MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Power BI](https://img.shields.io/badge/Power%20BI-Dashboard%20Blueprint-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)](https://powerbi.microsoft.com/)
-[![Dataset](https://img.shields.io/badge/Dataset-8,000%20rows%20·%2023%20clean%20cols-132040?style=for-the-badge)](data/gaming_academic_performance_clean.csv)
+[![Dataset](https://img.shields.io/badge/Dataset-8,000%20rows%20-%2019%20clean%20cols-132040?style=for-the-badge)](data/desempeno_academico_limpio.xlsx)
 
 <br/>
 
@@ -26,15 +26,15 @@
 
 Una institucion academica quiere entender como los habitos digitales de sus estudiantes se relacionan con el rendimiento. El dataset combina horas de gaming, horas de estudio, sueno, asistencia, uso de dispositivos, tiempo de reaccion, nivel de estres y calificaciones.
 
-El objetivo del proyecto es transformar un archivo CSV en una pieza de analisis tipo portafolio: datos documentados, consultas SQL reutilizables, pipeline Python y una narrativa de negocio lista para convertirse en dashboard.
+El objetivo del proyecto es transformar un CSV crudo en un flujo analitico reproducible: limpieza en Power Query, dataset final en Excel, copia CSV para MySQL, consultas SQL reutilizables y una estructura lista para construir un dashboard en Power BI.
 
 ---
 
-## Dashboard — 4 Paginas
+## Dashboard - 4 Paginas
 
 | Pagina | Nombre | Pregunta que responde |
 |--------|--------|-----------------------|
-| **P1** | Executive Overview | ¿Como se distribuye el rendimiento academico general? |
+| **P1** | Executive Overview | Como se distribuye el rendimiento academico general? |
 | **P2** | Gaming vs Study Trade-off | A partir de que intensidad de gaming baja la calificacion promedio? |
 | **P3** | Student Behavior Intelligence | Que patrones aparecen entre sueno, asistencia, dispositivos y estres? |
 | **P4** | Risk & Opportunity Segments | Que estudiantes requieren intervencion academica o seguimiento? |
@@ -43,7 +43,7 @@ El objetivo del proyecto es transformar un archivo CSV en una pieza de analisis 
 
 <div align="center">
 <img src="assets/dashboard_preview.svg" alt="Dashboard Preview" width="90%"/>
-<br/><sub><i>Blueprint visual para Power BI · Paleta academica navy #102A43 · teal #2EC4B6 · amber #FFB703</i></sub>
+<br/><sub><i>Blueprint visual para Power BI - Paleta academica navy #102A43, teal #2EC4B6 y amber #FFB703</i></sub>
 </div>
 
 ---
@@ -53,36 +53,63 @@ El objetivo del proyecto es transformar un archivo CSV en una pieza de analisis 
 ```text
 FUENTE DE DATOS
    data/gaming_academic_performance.csv
-   8,000 estudiantes · 14 variables academicas y de comportamiento
+   8,000 estudiantes - 14 variables originales
            |
            v
 LIMPIEZA / TRANSFORMACION
-   Python/clean_dataset.py
+   Power Query
+   PowerQuery/gaming_academic_cleaning.pq
    - normalizacion de texto
-   - control de outliers documentado
-   - columnas derivadas para BI
-   - output: data/gaming_academic_performance_clean.csv
+   - correccion de valores fuera de rango
+   - columnas derivadas para segmentacion
            |
            v
-PROCESAMIENTO ANALITICO
-   Python/analyze_dataset.py
-   - validacion de esquema
-   - resumen estadistico
-   - segmentos de riesgo
-   - export de resumenes opcionales
+DATASET FINAL
+   data/desempeno_academico_limpio.xlsx
+   data/gaming_academic_performance_clean.csv
+   8,000 estudiantes - 19 columnas limpias
            |
            v
 ALMACENAMIENTO ANALITICO
-   MySQL · tabla gaming_academic_performance
+   MySQL
+   SQL/gaming_academic_queries.sql
    - 16 queries analiticos
    - 3 vistas para dashboard
            |
            v
 VISUALIZACION
    Power BI / Excel
-   - 4 paginas sugeridas
-   - KPIs, segmentos, ranking y correlaciones
+   - KPIs
+   - segmentos
+   - ranking
+   - correlaciones
 ```
+
+---
+
+## Limpieza y Transformacion
+
+La limpieza principal fue realizada en **Power Query**. El archivo con los pasos en lenguaje M queda en:
+
+```text
+PowerQuery/gaming_academic_cleaning.pq
+```
+
+Resumen del proceso:
+
+| Paso | Resultado |
+|------|-----------|
+| Carga del CSV original | 8,000 filas y 14 columnas |
+| Revision de nulos | 0 valores nulos |
+| Limpieza de texto | Normalizacion de `gender`, `stress_level` y conservacion de siglas `FPS` / `RPG` |
+| Correccion de `grades` | Valores acotados al rango 0-100 |
+| Correccion de `addiction_score` | Valores negativos acotados a 0 |
+| Columnas agregadas | `gaming_band`, `study_band`, `sleep_band`, `performance_band`, `risk_flag` |
+| Dataset final | 8,000 filas y 19 columnas |
+
+La descripcion completa de archivos, columnas y reglas esta en:
+
+[data/README.md](data/README.md)
 
 ---
 
@@ -103,17 +130,12 @@ VISUALIZACION
 
 ---
 
-## SQL Analytics — 16 Queries + 3 Views
+## SQL Analytics - 16 Queries + 3 Views
 
 ```sql
 -- Ejemplo: calificacion promedio por banda de gaming
 SELECT
-    CASE
-        WHEN gaming_hours <= 2 THEN '0-2h'
-        WHEN gaming_hours <= 4 THEN '2-4h'
-        WHEN gaming_hours <= 6 THEN '4-6h'
-        ELSE '6-8h'
-    END AS gaming_band,
+    gaming_band,
     COUNT(*) AS students,
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(study_hours), 2) AS avg_study_hours,
@@ -125,30 +147,11 @@ ORDER BY MIN(gaming_hours);
 
 | Seccion SQL | Queries | Tecnicas utilizadas |
 |-------------|---------|---------------------|
-| KPIs Ejecutivos | Q1-Q4 | `AVG`, `COUNT`, `CASE WHEN`, percentiles |
+| KPIs Ejecutivos | Q1-Q4 | `AVG`, `COUNT`, `CASE WHEN`, agregaciones condicionales |
 | Rendimiento Academico | Q5-Q8 | segmentacion, ranking, performance bands |
-| Inteligencia de Comportamiento | Q9-Q12 | correlaciones, `NTILE`, agregaciones |
-| Riesgo y Calidad de Datos | Q13-Q16 | flags, outliers, vistas para BI |
-| ETL Views | 3 vistas | `CREATE OR REPLACE VIEW`, dashboard-ready tables |
-
----
-
-## Python Pipeline
-
-El script `Python/analyze_dataset.py` permite validar y resumir el dataset desde la terminal.
-
-```bash
-pip install pandas numpy
-python Python/analyze_dataset.py
-```
-
-Salidas esperadas:
-
-- Validacion de columnas requeridas.
-- Conteo de nulos por columna.
-- Resumen de correlaciones contra `grades`.
-- Tablas agregadas por bandas de gaming, estudio, estres y genero de juego.
-- Archivos CSV opcionales en `outputs/`.
+| Inteligencia de Comportamiento | Q9-Q12 | correlaciones calculadas, `NTILE`, agregaciones |
+| Riesgo y Calidad de Datos | Q13-Q16 | segmentos, revision de rangos, vistas para BI |
+| ETL Views | 3 vistas | `CREATE OR REPLACE VIEW`, tablas listas para dashboard |
 
 ---
 
@@ -157,60 +160,59 @@ Salidas esperadas:
 ```text
 Gaming_Academic_Performance_Analysis-Q1/
 |
-├── data/
-│   ├── gaming_academic_performance.csv      # Dataset fuente (8,000 filas · 14 cols)
-│   ├── gaming_academic_performance_clean.csv # Dataset limpio (8,000 filas · 23 cols)
-│   └── data_dictionary.md                   # Diccionario de variables
+|-- data/
+|   |-- README.md
+|   |-- gaming_academic_performance.csv
+|   |-- desempeno_academico_limpio.xlsx
+|   |-- Desempeño_académico_limpio.xlsx
+|   `-- gaming_academic_performance_clean.csv
 |
-├── SQL/
-│   └── gaming_academic_queries.sql          # 16 queries analiticos + 3 vistas
+|-- SQL/
+|   `-- gaming_academic_queries.sql
 |
-├── Python/
-│   └── analyze_dataset.py                   # Pipeline de validacion y analisis
+|-- PowerQuery/
+|   `-- gaming_academic_cleaning.pq
 |
-├── assets/
-│   ├── header_banner.svg                    # Banner del repositorio
-│   └── dashboard_preview.svg                # Mock visual del dashboard
+|-- assets/
+|   |-- header_banner.svg
+|   `-- dashboard_preview.svg
 |
-├── .github/workflows/
-│   └── python-package.yml                   # CI basico para validar el pipeline
-|
-├── INSIGHTS.md
-├── CLEANING.md
-├── CHANGELOG.md
-├── requirements.txt
-├── .gitignore
-└── README.md
+|-- .gitignore
+`-- README.md
 ```
 
 ---
 
 ## Como Reproducir
 
-### 1. Generar dataset limpio
+### 1. Generar dataset limpio en Power Query
 
-```bash
-pip install -r requirements.txt
-python Python/clean_dataset.py
-```
+1. Abrir Excel o Power BI.
+2. Importar `data/gaming_academic_performance.csv`.
+3. Entrar a **Power Query**.
+4. Aplicar los pasos documentados en `PowerQuery/gaming_academic_cleaning.pq`.
+5. Cargar la tabla limpia como `data/desempeno_academico_limpio.xlsx`.
+6. Exportar una copia CSV como `data/gaming_academic_performance_clean.csv` si se necesita trabajar en MySQL.
 
-### 2. Ejecutar el analisis Python
-
-```bash
-python Python/analyze_dataset.py
-```
-
-### 3. Crear tabla en MySQL
+### 2. Crear tabla en MySQL
 
 ```sql
--- Ejecutar la seccion 1 de SQL/gaming_academic_queries.sql
--- Luego importar:
-\copy gaming_academic_performance
-FROM 'data/gaming_academic_performance_clean.csv'
-CSV HEADER;
+-- Ejecutar la seccion 1 de SQL/gaming_academic_queries.sql.
+-- Luego importar el CSV limpio desde MySQL Workbench con Table Data Import Wizard.
 ```
 
-### 4. Conectar a Power BI
+Alternativa con SQL:
+
+```sql
+LOAD DATA LOCAL INFILE 'data/gaming_academic_performance_clean.csv'
+INTO TABLE gaming_academic_performance
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+```
+
+### 3. Conectar a Power BI
 
 ```text
 Get Data -> MySQL
@@ -228,13 +230,13 @@ Importar:
 ## Insights Clave del Analisis
 
 - El dataset fuente contiene **8,000 estudiantes**, **14 columnas** y no presenta valores nulos.
-- El pipeline de limpieza genera un archivo limpio de **23 columnas** sin eliminar filas.
+- La limpieza en Power Query genera un archivo limpio de **19 columnas** sin eliminar filas.
+- Despues de la limpieza, `grades` queda dentro del rango **0-100** y `addiction_score` queda con minimo **0**.
 - Las **horas de estudio** son la variable con relacion positiva mas fuerte frente a calificaciones (`corr = 0.733`).
 - Las **horas de gaming** muestran una relacion negativa relevante con calificaciones (`corr = -0.552`).
 - Estudiantes con **0-2h de gaming** tienen calificacion promedio de **82.02**, frente a **49.38** en el grupo de **6-8h**.
 - Estudiantes con **8-10h de estudio** alcanzan promedio de **88.66**, frente a **44.91** en el grupo de **1-3h**.
 - Hay **3,131 estudiantes en riesgo academico** (`grades < 60`) y **1,375 estudiantes excelentes** (`grades >= 90`).
-- Limpieza documentada: **134 calificaciones superiores a 100** se acotan a 100 y **107 addiction scores negativos** se acotan a 0, manteniendo columnas originales para auditoria.
 
 ---
 
@@ -243,7 +245,7 @@ Importar:
 **[Tu nombre]**  
 Data Analyst Jr. en formacion
 
-**Stack principal:** SQL/MySQL · Python/pandas · Power BI · Excel Advanced
+**Stack principal:** Power Query - Excel - Power BI - SQL/MySQL
 
 ---
 
