@@ -25,7 +25,7 @@
 
 Una institucion academica quiere entender como los habitos digitales de sus estudiantes se relacionan con el rendimiento. El dataset combina horas de gaming, horas de estudio, sueno, asistencia, uso de dispositivos, tiempo de reaccion, nivel de estres y calificaciones.
 
-El objetivo del proyecto es transformar un CSV crudo en un flujo analitico reproducible: limpieza en Power Query, dataset final en Excel, copia CSV para MySQL, consultas SQL reutilizables y una estructura lista para construir un dashboard en Power BI.
+El objetivo del proyecto es transformar un CSV crudo en un flujo analitico reproducible: limpieza en Power Query, dataset final en Excel, consultas SQL reutilizables en MySQL y una estructura lista para construir un dashboard en Power BI.
 
 ---
 
@@ -64,8 +64,7 @@ LIMPIEZA / TRANSFORMACION
            |
            v
 DATASET FINAL
-   data/desempeno_academico_limpio.xlsx
-   data/gaming_academic_performance_clean.csv
+   data/Desempeño_académico_limpio.xlsx
    8,000 estudiantes - 19 columnas limpias
            |
            v
@@ -86,6 +85,29 @@ VISUALIZACION
 
 ---
 
+## Datos
+
+Esta seccion resume los dos archivos de datos usados en el proyecto.
+
+| Archivo | Descripcion | Filas | Columnas |
+|---------|-------------|------:|---------:|
+| `data/gaming_academic_performance.csv` | Dataset original sin transformar | 8,000 | 14 |
+| `data/Desempeño_académico_limpio.xlsx` | Dataset limpio y transformado en Power Query | 8,000 | 19 |
+
+Flujo de datos:
+
+```text
+gaming_academic_performance.csv
+        |
+        v
+Power Query
+        |
+        v
+Desempeño_académico_limpio.xlsx
+```
+
+---
+
 ## Limpieza y Transformacion
 
 La limpieza principal fue realizada en **Power Query**. El archivo con los pasos en lenguaje M queda en:
@@ -101,14 +123,26 @@ Resumen del proceso:
 | Carga del CSV original | 8,000 filas y 14 columnas |
 | Revision de nulos | 0 valores nulos |
 | Limpieza de texto | Normalizacion de `gender`, `stress_level` y conservacion de siglas `FPS` / `RPG` |
+| Renombrado de columna | `attendance` pasa a llamarse `attendance (%)` en el archivo limpio de Power Query |
 | Correccion de `grades` | Valores acotados al rango 0-100 |
 | Correccion de `addiction_score` | Valores negativos acotados a 0 |
 | Columnas agregadas | `gaming_band`, `study_band`, `sleep_band`, `performance_band`, `risk_flag` |
 | Dataset final | 8,000 filas y 19 columnas |
 
-La descripcion completa de archivos, columnas y reglas esta en:
+---
 
-[data/README.md](data/README.md)
+## Diccionario de Columnas
+
+El detalle completo de columnas, tipos sugeridos, valores categoricos, reglas de limpieza y columnas derivadas esta documentado en [`data/data_dictionary.md`](data/data_dictionary.md).
+
+Resumen rapido:
+
+| Elemento | Detalle |
+|----------|---------|
+| Columnas originales | 14 |
+| Columnas finales | 19 |
+| Columna renombrada | `attendance` pasa a `attendance (%)` en Power Query / Excel |
+| Columnas derivadas | `gaming_band`, `study_band`, `sleep_band`, `performance_band`, `risk_flag` |
 
 ---
 
@@ -122,7 +156,7 @@ La descripcion completa de archivos, columnas y reglas esta en:
 | **Gaming Hours** | Horas diarias de gaming | Intensidad de juego |
 | **Study Hours** | Horas diarias de estudio | Disciplina academica |
 | **Sleep Hours** | Horas diarias de sueno | Balance de rutina |
-| **Attendance** | Porcentaje de asistencia | Compromiso academico |
+| **Attendance** | Porcentaje de asistencia, columna `attendance (%)` en Power Query | Compromiso academico |
 | **Addiction Score** | Indice de dependencia al gaming | Riesgo conductual |
 | **Device Usage** | Uso diario de dispositivos | Exposicion digital |
 | **Reaction Time** | Tiempo de reaccion en milisegundos | Indicador cognitivo operativo |
@@ -152,6 +186,8 @@ ORDER BY MIN(gaming_hours);
 | Riesgo y Calidad de Datos | Q13-Q16 | segmentos, revision de rangos, vistas para BI |
 | ETL Views | 3 vistas | `CREATE OR REPLACE VIEW`, tablas listas para dashboard |
 
+Nota: en el archivo limpio de Power Query la columna aparece como `attendance (%)`. En el script SQL se usa `attendance` como nombre tecnico para evitar espacios y parentesis en las consultas.
+
 ---
 
 ## Estructura del Repositorio
@@ -160,11 +196,9 @@ ORDER BY MIN(gaming_hours);
 Gaming_Academic_Performance_Analysis-Q1/
 |
 |-- data/
-|   |-- README.md
 |   |-- gaming_academic_performance.csv
-|   |-- desempeno_academico_limpio.xlsx
 |   |-- Desempeño_académico_limpio.xlsx
-|   `-- gaming_academic_performance_clean.csv
+|   `-- data_dictionary.md
 |
 |-- SQL/
 |   `-- gaming_academic_queries.sql
@@ -190,15 +224,11 @@ Gaming_Academic_Performance_Analysis-Q1/
 2. Importar `data/gaming_academic_performance.csv`.
 3. Entrar a **Power Query**.
 4. Aplicar los pasos documentados en `PowerQuery/gaming_academic_cleaning.pq`.
-5. Cargar la tabla limpia como `data/desempeno_academico_limpio.xlsx`.
-6. Exportar una copia CSV como `data/gaming_academic_performance_clean.csv` si se necesita trabajar en MySQL.
+5. Cargar la tabla limpia como `data/Desempeño_académico_limpio.xlsx`.
 
 ### 2. Crear tabla en MySQL
 
-```sql
--- Ejecutar la seccion 1 de SQL/gaming_academic_queries.sql.
--- Luego importar el CSV limpio desde MySQL Workbench con Table Data Import Wizard.
-```
+Para cargar en MySQL, exportar la hoja limpia desde Excel como CSV y luego usar MySQL Workbench con **Table Data Import Wizard**.
 
 Alternativa con SQL:
 
@@ -241,7 +271,7 @@ Importar:
 
 ## Autor
 
-**[Tu nombre]**  
+**Nicolás Ospina Polanía**  
 Data Analyst Jr. en formacion
 
 **Stack principal:** Power Query - Excel - Power BI - SQL/MySQL
@@ -253,3 +283,4 @@ Data Analyst Jr. en formacion
 *Proyecto construido como repositorio de portafolio academico a partir de un unico dataset CSV.*
 
 </div>
+
