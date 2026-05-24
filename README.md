@@ -228,18 +228,24 @@ Gaming_Academic_Performance_Analysis-Q1/
 
 ### 2. Crear tabla en MySQL
 
-Para cargar en MySQL, exportar la hoja limpia desde Excel como CSV y luego usar MySQL Workbench con **Table Data Import Wizard**.
+🗄️ Crear la tabla con el script de setup en `SQL/gaming_academic_queries.sql`.
 
-Alternativa con SQL:
+📄 El dataset limpio esta en `data/Desempeño_académico_limpio.xlsx`. Para importarlo en MySQL, exportar la hoja limpia como CSV con el nombre:
 
-```sql
-LOAD DATA LOCAL INFILE 'data/gaming_academic_performance_clean.csv'
-INTO TABLE gaming_academic_performance
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS;
+```text
+data/gaming_academic_performance_clean.csv
 ```
+
+📥 Importar el CSV con **Table Data Import Wizard** en MySQL Workbench:
+
+1. Abrir MySQL Workbench.
+2. Conectarse a la base de datos.
+3. Ir a **Schemas**.
+4. Seleccionar la base de datos del proyecto.
+5. Clic derecho en **Tables**.
+6. Elegir **Table Data Import Wizard**.
+7. Seleccionar `data/gaming_academic_performance_clean.csv`.
+8. Importar los datos en la tabla `gaming_academic_performance`.
 
 ### 3. Conectar a Power BI
 
