@@ -12,7 +12,6 @@
 [![Power Query](https://img.shields.io/badge/Power%20Query-ETL%20Cleaning-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://powerquery.microsoft.com/)
 [![SQL](https://img.shields.io/badge/SQL-MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Power BI](https://img.shields.io/badge/Power%20BI-Dashboard%20Blueprint-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)](https://powerbi.microsoft.com/)
-[![Dataset](https://img.shields.io/badge/Dataset-8,000%20rows%20-%2019%20clean%20cols-132040?style=for-the-badge)](data/desempeno_academico_limpio.xlsx)
 
 <br/>
 
