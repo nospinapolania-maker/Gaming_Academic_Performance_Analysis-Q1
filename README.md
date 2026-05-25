@@ -23,7 +23,7 @@
 
 ## Contexto del Proyecto
 
-Una institucion academica quiere entender como los habitos digitales de sus estudiantes se relacionan con el rendimiento. El dataset combina horas de gaming, horas de estudio, sueno, asistencia, uso de dispositivos, tiempo de reaccion, nivel de estres y calificaciones.
+Una institucion academica quiere entender como los habitos digitales de sus estudiantes se relacionan con el rendimiento. El dataset combina horas de gaming, horas de estudio, sueño, asistencia, uso de dispositivos, tiempo de reaccion, nivel de estres y calificaciones.
 
 El objetivo del proyecto es transformar un CSV crudo en un flujo analitico reproducible: limpieza en Power Query, dataset final en Excel, consultas SQL reutilizables en MySQL y una estructura lista para construir un dashboard en Power BI.
 
@@ -155,7 +155,7 @@ Resumen rapido:
 | **Excellent Students** | Estudiantes con `grades >= 90` | Identificacion de mejores practicas |
 | **Gaming Hours** | Horas diarias de gaming | Intensidad de juego |
 | **Study Hours** | Horas diarias de estudio | Disciplina academica |
-| **Sleep Hours** | Horas diarias de sueno | Balance de rutina |
+| **Sleep Hours** | Horas diarias de sueño | Balance de rutina |
 | **Attendance** | Porcentaje de asistencia, columna `attendance (%)` en Power Query | Compromiso academico |
 | **Addiction Score** | Indice de dependencia al gaming | Riesgo conductual |
 | **Device Usage** | Uso diario de dispositivos | Exposicion digital |
