@@ -15,7 +15,7 @@
 
 <br/>
 
-> "No todas las horas de pantalla pesan igual: el valor analitico esta en entender cuando el gaming compite con el estudio, el sueno y la asistencia."
+> "No todas las horas de pantalla pesan igual: el valor analitico esta en entender cuando el gaming compite con el estudio, el sueño y la asistencia."
 
 </div>
 
