@@ -130,6 +130,7 @@ Resumen del proceso:
 |------|-----------|
 | Carga del CSV original | 8,000 filas y 14 columnas |
 | Revision de nulos | 0 valores nulos |
+| Configuracion regional | En Power Query se uso **Decimal Number** con configuracion regional **English (United States)** para leer correctamente los decimales |
 | Limpieza de texto | Normalizacion de `gender`, `stress_level` y conservacion de siglas `FPS` / `RPG` |
 | Renombrado de columna | `attendance` pasa a llamarse `attendance (%)` en el archivo limpio de Power Query |
 | Correccion de `grades` | Valores acotados al rango 0-100 |
