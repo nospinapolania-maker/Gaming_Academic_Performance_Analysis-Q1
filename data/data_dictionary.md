@@ -149,6 +149,7 @@ Las siguientes columnas fueron creadas durante la limpieza y transformacion en P
 | Regla | Accion |
 |-------|--------|
 | Tipos de datos | Se asignaron tipos numericos y de texto en Power Query. |
+| Configuracion regional | Para las columnas numericas se uso **Decimal Number** con configuracion regional **English (United States)**, porque el dataset usa punto decimal. |
 | Columnas categoricas | Se limpiaron espacios y se normalizo el formato de texto. |
 | `attendance` | Se renombro como `attendance (%)` en el archivo limpio de Power Query. |
 | Siglas | Se conservaron siglas como `FPS` y `RPG`. |
