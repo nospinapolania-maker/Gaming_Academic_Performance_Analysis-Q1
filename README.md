@@ -256,6 +256,22 @@ data/gaming_academic_performance_clean.csv
 7. Seleccionar `data/Desempeño_académico.csv`.(versión convertida en csv del dataset limpio)
 8. Importar los datos en la tabla `gaming_academic_performance`.
 
+Antes de importar el CSV, revisar que los numeros decimales usen **punto (`.`)** y no **coma (`,`)** como separador decimal.
+
+Ejemplo esperado para MySQL:
+
+```text
+91.44
+```
+
+No:
+
+```text
+91,44
+```
+
+Esto fue necesario porque MySQL puede generar error al leer valores numericos con coma decimal durante la importacion.
+
 ### 3. Conectar a Power BI
 
 ```text
