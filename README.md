@@ -35,7 +35,7 @@ El objetivo del proyecto es transformar un CSV crudo en un flujo analitico repro
 |--------|--------|-----------------------|
 | **P1** | Executive Overview | Como se distribuye el rendimiento academico general? |
 | **P2** | Gaming vs Study Trade-off | A partir de que intensidad de gaming baja la calificacion promedio? |
-| **P3** | Student Behavior Intelligence | Que patrones aparecen entre sueno, asistencia, dispositivos y estres? |
+| **P3** | Student Behavior Intelligence | Que patrones aparecen entre sueño, asistencia, dispositivos y estres? |
 | **P4** | Risk & Opportunity Segments | Que estudiantes requieren intervencion academica o seguimiento? |
 
 <br/>
@@ -244,7 +244,7 @@ data/gaming_academic_performance_clean.csv
 4. Seleccionar la base de datos del proyecto.
 5. Clic derecho en **Tables**.
 6. Elegir **Table Data Import Wizard**.
-7. Seleccionar `data/gaming_academic_performance_clean.csv`.
+7. Seleccionar `data/Desempeño_académico.csv`.(versión convertida en csv del dataset limpio)
 8. Importar los datos en la tabla `gaming_academic_performance`.
 
 ### 3. Conectar a Power BI
