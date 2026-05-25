@@ -83,6 +83,14 @@ VISUALIZACION
    - correlaciones
 ```
 
+<br/>
+
+<div align="center">
+<img src="assets/project_workflow.svg" alt="Project Analytics Workflow" width="90%"/>
+<br/><sub><i>Flujo visual del proyecto: CSV original, limpieza en Power Query, dataset limpio, SQL Analytics y salida Power BI-ready.</i></sub>
+</div>
+
+
 ---
 
 ## Datos
