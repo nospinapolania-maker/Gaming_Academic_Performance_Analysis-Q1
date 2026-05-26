@@ -1,10 +1,12 @@
-- ============================================================
+-- ============================================================
 -- GAMING ACADEMIC PERFORMANCE - SQL Analytics Queries
--- Descripcion: KPIs y analisis de comportamiento estudiantil
--- Dataset: gaming_academic_performance_clean (8,000 registros, 19 columnas)
+-- Descripcion: KPIs, segmentos y vistas para dashboard academico
+-- Dataset limpio: 8,000 estudiantes, 19 columnas
 -- Motor sugerido: MySQL 8+
--- Nota: en Power Query / Excel la columna aparece como `attendance (%)`.
--- En SQL se usa `attendance` para evitar espacios y parentesis en los nombres.
+--
+-- Nota de nombres:
+-- En Power Query / Excel la columna aparece como `attendance (%)`.
+-- En SQL se usa `attendance` para evitar espacios y parentesis.
 -- ============================================================
 
 -- ------------------------------------------------------------
@@ -40,12 +42,23 @@ CREATE TABLE IF NOT EXISTS gaming_academic_performance (
 -- Luego importar el CSV con MySQL Workbench > Table Data Import Wizard
 -- Ruta dentro de Workbench:
 -- Schemas > [tu_base] > Tables > clic derecho > Table Data Import Wizard
+--
+-- Si el CSV exportado conserva el encabezado `attendance (%)`, mapearlo
+-- manualmente hacia la columna SQL `attendance` durante la importacion.
+
+-- Indices opcionales si el analisis se vuelve mas pesado:
+-- CREATE INDEX idx_performance_band ON gaming_academic_performance (performance_band);
+-- CREATE INDEX idx_risk_flag ON gaming_academic_performance (risk_flag);
+-- CREATE INDEX idx_gaming_band ON gaming_academic_performance (gaming_band);
+-- CREATE INDEX idx_study_band ON gaming_academic_performance (study_band);
 
 -- ------------------------------------------------------------
 -- SECCION 2: KPIS EJECUTIVOS (Pagina 1 del Dashboard)
 -- ------------------------------------------------------------
 
 -- Q1: KPIs generales del dataset
+-- Los conteos de riesgo y excelencia se calculan desde `grades`
+-- para dejar explicita la regla de negocio: riesgo < 60 y excelencia >= 90.
 SELECT
     COUNT(*) AS total_students,
     ROUND(AVG(grades), 2) AS avg_grade,
@@ -54,38 +67,51 @@ SELECT
     ROUND(AVG(sleep_hours), 2) AS avg_sleep_hours,
     ROUND(AVG(attendance), 2) AS avg_attendance,
     SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) AS at_risk_students,
-    SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) AS excellent_students
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct,
+    SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) AS excellent_students,
+    ROUND(100.0 * SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) / COUNT(*), 2) AS excellent_pct
 FROM gaming_academic_performance;
 
--- Q2: Distribucion por performance academica
+-- Q2: Distribucion por rendimiento academico
+-- pct_students calcula el peso de cada banda sobre el total de estudiantes.
+-- SUM(COUNT(*)) OVER () obtiene el total general despues del GROUP BY,
+-- sin eliminar el detalle por performance_band.
 SELECT
     performance_band,
     COUNT(*) AS students,
     ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS pct_students,
-    ROUND(AVG(grades), 2) AS avg_grade
+    ROUND(AVG(grades), 2) AS avg_grade,
+    ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
+    ROUND(AVG(study_hours), 2) AS avg_study_hours
 FROM gaming_academic_performance
 GROUP BY performance_band
-ORDER BY avg_grade DESC;
+ORDER BY FIELD(performance_band, 'Excellent', 'Solid', 'Regular', 'At Risk');
 
--- Q3: Distribucion por genero y estres
+-- Q3: Distribucion por genero y nivel de estres
+
+--Para cada combinación de género y estrés, ¿cuántos estudiantes hay y cuáles son sus promedios de nota, gaming, estudio y sueño?
 SELECT
     gender,
     stress_level,
     COUNT(*) AS students,
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
-    ROUND(AVG(study_hours), 2) AS avg_study_hours
+    ROUND(AVG(study_hours), 2) AS avg_study_hours,
+    ROUND(AVG(sleep_hours), 2) AS avg_sleep_hours
 FROM gaming_academic_performance
 GROUP BY gender, stress_level
-ORDER BY gender, avg_grade DESC;
+ORDER BY gender, FIELD(stress_level, 'Low', 'Medium', 'High');
 
--- Q4: Indicadores de calidad del dataset limpio
+
+-- Q4: Validacion ejecutiva de calidad del dataset limpio
 SELECT
-    SUM(CASE WHEN grades > 100 THEN 1 ELSE 0 END) AS grades_over_100_after_cleaning,
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT student_id) AS unique_students,
+    SUM(CASE WHEN grades > 100 THEN 1 ELSE 0 END) AS grades_over_100,
     SUM(CASE WHEN grades < 0 THEN 1 ELSE 0 END) AS grades_below_0,
-    SUM(CASE WHEN addiction_score < 0 THEN 1 ELSE 0 END) AS negative_addiction_score_after_cleaning,
-    SUM(CASE WHEN gaming_hours > 8 THEN 1 ELSE 0 END) AS gaming_over_8h,
-    SUM(CASE WHEN study_hours > 10 THEN 1 ELSE 0 END) AS study_over_10h
+    SUM(CASE WHEN addiction_score < 0 THEN 1 ELSE 0 END) AS negative_addiction_score,
+    SUM(CASE WHEN gaming_hours < 0 OR gaming_hours > 8 THEN 1 ELSE 0 END) AS gaming_out_of_range,
+    SUM(CASE WHEN study_hours < 1 OR study_hours > 10 THEN 1 ELSE 0 END) AS study_out_of_range
 FROM gaming_academic_performance;
 
 -- ------------------------------------------------------------
@@ -99,7 +125,8 @@ SELECT
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(study_hours), 2) AS avg_study_hours,
     ROUND(AVG(addiction_score), 2) AS avg_addiction_score,
-    ROUND(AVG(device_usage), 2) AS avg_device_usage
+    ROUND(AVG(device_usage), 2) AS avg_device_usage,
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
 FROM gaming_academic_performance
 GROUP BY gaming_band
 ORDER BY MIN(gaming_hours);
@@ -110,46 +137,43 @@ SELECT
     COUNT(*) AS students,
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
-    ROUND(AVG(attendance), 2) AS avg_attendance
+    ROUND(AVG(attendance), 2) AS avg_attendance,
+    ROUND(100.0 * SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) / COUNT(*), 2) AS excellent_pct
 FROM gaming_academic_performance
 GROUP BY study_band
 ORDER BY MIN(study_hours);
 
--- Q7: Ranking por genero de videojuego
+-- Q7: Matriz gaming vs estudio
+SELECT
+    gaming_band,
+    study_band,
+    COUNT(*) AS students,
+    ROUND(AVG(grades), 2) AS avg_grade,
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
+FROM gaming_academic_performance
+GROUP BY gaming_band, study_band
+ORDER BY MIN(gaming_hours), MIN(study_hours);
+
+-- Q8: Ranking por genero de videojuego
 SELECT
     gaming_genre,
     COUNT(*) AS students,
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
     ROUND(AVG(study_hours), 2) AS avg_study_hours,
-    ROUND(AVG(addiction_score), 2) AS avg_addiction_score
+    ROUND(AVG(addiction_score), 2) AS avg_addiction_score,
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
 FROM gaming_academic_performance
 GROUP BY gaming_genre
 ORDER BY avg_grade DESC;
-
--- Q8: Top 20 estudiantes con alto gaming y alto rendimiento
-SELECT
-    student_id,
-    age,
-    gender,
-    gaming_genre,
-    gaming_hours,
-    study_hours,
-    attendance,
-    grades,
-    DENSE_RANK() OVER (ORDER BY grades DESC) AS grade_rank
-FROM gaming_academic_performance
-WHERE gaming_hours >= 6
-  AND grades >= 85
-ORDER BY grades DESC, study_hours DESC
-LIMIT 20;
 
 -- ------------------------------------------------------------
 -- SECCION 4: INTELIGENCIA DE COMPORTAMIENTO (Pagina 3)
 -- ------------------------------------------------------------
 
 -- Q9: Correlaciones contra calificaciones
--- MySQL no incluye CORR() como funcion nativa; se calcula con la formula de correlacion.
+-- MySQL no incluye CORR() como funcion nativa; se calcula con la formula:
+-- covarianza(x,y) / (desviacion_estandar(x) * desviacion_estandar(y))
 SELECT
     ROUND((AVG(grades * gaming_hours) - AVG(grades) * AVG(gaming_hours)) /
           NULLIF(STDDEV_POP(grades) * STDDEV_POP(gaming_hours), 0), 3) AS corr_grades_gaming,
@@ -176,15 +200,16 @@ SELECT
     ROUND(AVG(addiction_score), 2) AS avg_addiction_score
 FROM gaming_academic_performance
 GROUP BY stress_level
-ORDER BY avg_grade DESC;
+ORDER BY FIELD(stress_level, 'Low', 'Medium', 'High');
 
--- Q11: Sueno y rendimiento
+-- Q11: Sueno y rendimiento academico
 SELECT
     sleep_band,
     COUNT(*) AS students,
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
-    ROUND(AVG(study_hours), 2) AS avg_study_hours
+    ROUND(AVG(study_hours), 2) AS avg_study_hours,
+    ROUND(AVG(attendance), 2) AS avg_attendance
 FROM gaming_academic_performance
 GROUP BY sleep_band
 ORDER BY MIN(sleep_hours);
@@ -196,6 +221,7 @@ WITH reaction_quartiles AS (
         reaction_time_ms,
         grades,
         gaming_hours,
+        study_hours,
         NTILE(4) OVER (ORDER BY reaction_time_ms) AS reaction_quartile
     FROM gaming_academic_performance
 )
@@ -205,7 +231,8 @@ SELECT
     ROUND(MIN(reaction_time_ms), 2) AS min_reaction_ms,
     ROUND(MAX(reaction_time_ms), 2) AS max_reaction_ms,
     ROUND(AVG(grades), 2) AS avg_grade,
-    ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours
+    ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
+    ROUND(AVG(study_hours), 2) AS avg_study_hours
 FROM reaction_quartiles
 GROUP BY reaction_quartile
 ORDER BY reaction_quartile;
@@ -218,6 +245,7 @@ ORDER BY reaction_quartile;
 SELECT
     risk_flag AS student_segment,
     COUNT(*) AS students,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS pct_students,
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
     ROUND(AVG(study_hours), 2) AS avg_study_hours,
@@ -228,73 +256,42 @@ ORDER BY students DESC;
 
 -- Q14: Riesgo por asistencia y estudio
 SELECT
-    CASE WHEN attendance < 75 THEN 'Asistencia baja' ELSE 'Asistencia adecuada' END AS attendance_flag,
-    CASE WHEN study_hours < 3 THEN 'Estudio bajo' ELSE 'Estudio suficiente' END AS study_flag,
+    CASE
+        WHEN attendance < 75 THEN 'Asistencia baja'
+        ELSE 'Asistencia adecuada'
+    END AS attendance_flag,
+    CASE
+        WHEN study_hours < 3 THEN 'Estudio bajo'
+        ELSE 'Estudio suficiente'
+    END AS study_flag,
     COUNT(*) AS students,
     ROUND(AVG(grades), 2) AS avg_grade,
-    SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) AS at_risk_students
+    SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) AS at_risk_students,
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
 FROM gaming_academic_performance
 GROUP BY attendance_flag, study_flag
 ORDER BY avg_grade ASC;
 
--- Q15: Uso de dispositivos vs rendimiento
-SELECT
-    CASE
-        WHEN device_usage < 5 THEN '<5'
-        WHEN device_usage < 8 THEN '5-8'
-        WHEN device_usage < 11 THEN '8-11'
-        ELSE '11+'
-    END AS device_usage_band,
-    COUNT(*) AS students,
-    ROUND(AVG(grades), 2) AS avg_grade,
-    ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
-    ROUND(AVG(addiction_score), 2) AS avg_addiction_score
-FROM gaming_academic_performance
-GROUP BY device_usage_band
-ORDER BY MIN(device_usage);
-
--- Q16: Validacion final de rangos
-SELECT
-    student_id,
-    age,
-    gender,
-    gaming_hours,
-    study_hours,
-    addiction_score,
-    grades,
-    CASE
-        WHEN grades > 100 THEN 'Grade > 100'
-        WHEN addiction_score < 0 THEN 'Negative addiction score'
-        WHEN grades < 0 THEN 'Grade < 0'
-        ELSE 'OK'
-    END AS quality_flag
-FROM gaming_academic_performance
-WHERE grades > 100
-   OR addiction_score < 0
-   OR grades < 0
-ORDER BY quality_flag, student_id;
-
 -- ------------------------------------------------------------
--- SECCION 6: VISTAS ETL PARA POWER BI / DASHBOARD
+-- SECCION 6: VISTAS PARA POWER BI / DASHBOARD
 -- ------------------------------------------------------------
 
--- Vista 1: KPIs academicos agregados
+-- Vista 1: KPIs ejecutivos para tarjetas principales
 CREATE OR REPLACE VIEW vw_kpis_academicos AS
 SELECT
-    gender,
-    stress_level,
-    gaming_genre,
-    COUNT(*) AS students,
+    COUNT(*) AS total_students,
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
     ROUND(AVG(study_hours), 2) AS avg_study_hours,
     ROUND(AVG(sleep_hours), 2) AS avg_sleep_hours,
     ROUND(AVG(attendance), 2) AS avg_attendance,
-    SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) AS at_risk_students
-FROM gaming_academic_performance
-GROUP BY gender, stress_level, gaming_genre;
+    SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) AS at_risk_students,
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct,
+    SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) AS excellent_students,
+    ROUND(100.0 * SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) / COUNT(*), 2) AS excellent_pct
+FROM gaming_academic_performance;
 
--- Vista 2: Segmentos por estudiante
+-- Vista 2: Tabla de detalle por estudiante para filtros, scatter plots y drill-through
 CREATE OR REPLACE VIEW vw_student_segments AS
 SELECT
     student_id,
@@ -306,19 +303,24 @@ SELECT
     study_hours,
     sleep_hours,
     attendance,
+    social_activity,
     device_usage,
+    reaction_time_ms,
     addiction_score,
     grades,
     gaming_band,
     study_band,
     sleep_band,
     performance_band,
-    risk_flag
+    risk_flag,
+    CASE WHEN grades < 60 THEN 1 ELSE 0 END AS is_at_risk,
+    CASE WHEN grades >= 90 THEN 1 ELSE 0 END AS is_excellent
 FROM gaming_academic_performance;
 
--- Vista 3: Tabla agregada para visuals de comportamiento
+-- Vista 3: Tabla agregada para visuales de comportamiento
 CREATE OR REPLACE VIEW vw_behavior_dashboard AS
 SELECT
+    gender,
     gaming_genre,
     stress_level,
     gaming_band,
@@ -326,7 +328,9 @@ SELECT
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(study_hours), 2) AS avg_study_hours,
     ROUND(AVG(sleep_hours), 2) AS avg_sleep_hours,
+    ROUND(AVG(attendance), 2) AS avg_attendance,
     ROUND(AVG(device_usage), 2) AS avg_device_usage,
-    ROUND(AVG(addiction_score), 2) AS avg_addiction_score
+    ROUND(AVG(addiction_score), 2) AS avg_addiction_score,
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
 FROM gaming_academic_performance
-GROUP BY gaming_genre, stress_level, gaming_band;
+GROUP BY gender, gaming_genre, stress_level, gaming_band;
