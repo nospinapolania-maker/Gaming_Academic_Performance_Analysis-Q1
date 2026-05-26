@@ -71,8 +71,8 @@ DATASET FINAL
 ALMACENAMIENTO ANALITICO
    MySQL
    SQL/gaming_academic_queries.sql
-   - 16 queries analiticos
-   - 3 vistas para dashboard
+   - 14 queries analiticas
+   - 3 vistas para Power BI
            |
            v
 VISUALIZACION
@@ -172,7 +172,7 @@ Resumen rapido:
 
 ---
 
-## SQL Analytics - 16 Queries + 3 Views
+## SQL Analytics - 14 Queries Analiticas + 3 Vistas para Power BI
 
 ```sql
 -- Ejemplo: calificacion promedio por banda de gaming
