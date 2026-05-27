@@ -88,7 +88,6 @@ GROUP BY performance_band
 ORDER BY FIELD(performance_band, 'Excellent', 'Solid', 'Regular', 'At Risk');
 
 -- Q3: Distribucion por genero y nivel de estres
-
 --Para cada combinación de género y estrés, ¿cuántos estudiantes hay y cuáles son sus promedios de nota, gaming, estudio y sueño?
 SELECT
     gender,
@@ -119,6 +118,12 @@ FROM gaming_academic_performance;
 -- ------------------------------------------------------------
 
 -- Q5: Calificacion promedio por banda de gaming
+-- Esta consulta agrupa a los estudiantes segun su intensidad de gaming.
+-- Para cada banda calcula: cantidad de estudiantes, promedio de notas,
+-- promedio de horas de estudio, promedio de addiction_score,
+-- promedio de uso de dispositivos y porcentaje de estudiantes en riesgo.
+-- El porcentaje en riesgo se calcula dentro de cada banda:
+-- estudiantes con grades < 60 / total de estudiantes de la banda * 100
 SELECT
     gaming_band,
     COUNT(*) AS students,
@@ -129,7 +134,7 @@ SELECT
     ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
 FROM gaming_academic_performance
 GROUP BY gaming_band
-ORDER BY MIN(gaming_hours);
+ORDER BY FIELD(gaming_band, '0-2h', '2-4h', '4-6h', '6-8h');
 
 -- Q6: Calificacion promedio por banda de estudio
 SELECT
