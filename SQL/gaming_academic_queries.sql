@@ -137,6 +137,9 @@ GROUP BY gaming_band
 ORDER BY FIELD(gaming_band, '0-2h', '2-4h', '4-6h', '6-8h');
 
 -- Q6: Calificacion promedio por banda de estudio
+-- Para cada banda de estudio, cuántos estudiantes hay, cuál es su nota promedio,
+-- cuánto juegan en promedio, cuál es su asistencia promedio
+-- y qué porcentaje son excelentes.
 SELECT
     study_band,
     COUNT(*) AS students,
