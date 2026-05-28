@@ -118,6 +118,7 @@ FROM gaming_academic_performance;
 -- ------------------------------------------------------------
 
 -- Q5: Calificacion promedio por banda de gaming
+-- Pregunta: Como cambia el rendimiento academico segun la intensidad de gaming?
 -- Esta consulta agrupa a los estudiantes segun su intensidad de gaming.
 -- Para cada banda calcula: cantidad de estudiantes, promedio de notas,
 -- promedio de horas de estudio, promedio de addiction_score,
@@ -137,6 +138,7 @@ GROUP BY gaming_band
 ORDER BY FIELD(gaming_band, '0-2h', '2-4h', '4-6h', '6-8h');
 
 -- Q6: Calificacion promedio por banda de estudio
+-- Pregunta: Como cambia el rendimiento academico segun las horas de estudio?
 -- Para cada banda de estudio, cuántos estudiantes hay, cuál es su nota promedio,
 -- cuánto juegan en promedio, cuál es su asistencia promedio
 -- y qué porcentaje son excelentes.
@@ -149,9 +151,15 @@ SELECT
     ROUND(100.0 * SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) / COUNT(*), 2) AS excellent_pct
 FROM gaming_academic_performance
 GROUP BY study_band
-ORDER BY MIN(study_hours);
+ORDER BY FIELD(study_band, '1-3h', '3-6h', '6-8h', '8-10h');
 
 -- Q7: Matriz gaming vs estudio
+-- Pregunta: Que combinaciones de gaming y estudio se asocian con mejor o peor rendimiento?
+-- Esta consulta cruza las bandas de gaming con las bandas de estudio.
+-- Para cada combinacion calcula: cantidad de estudiantes, nota promedio
+-- y porcentaje de estudiantes en riesgo academico.
+-- Sirve para identificar que combinaciones de habitos se asocian
+-- con mejor o peor rendimiento.
 SELECT
     gaming_band,
     study_band,
@@ -160,9 +168,18 @@ SELECT
     ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
 FROM gaming_academic_performance
 GROUP BY gaming_band, study_band
-ORDER BY MIN(gaming_hours), MIN(study_hours);
+ORDER BY
+    FIELD(gaming_band, '0-2h', '2-4h', '4-6h', '6-8h'),
+    FIELD(study_band, '1-3h', '3-6h', '6-8h', '8-10h');
 
 -- Q8: Ranking por genero de videojuego
+-- Pregunta: Que generos de videojuego se asocian con mejor rendimiento academico,
+-- menor porcentaje de riesgo y mayor porcentaje de estudiantes excelentes?
+-- Esta consulta agrupa a los estudiantes segun su genero principal de juego.
+-- Para cada genero calcula cantidad de estudiantes, nota promedio,
+-- habitos promedio de gaming y estudio, addiction_score promedio,
+-- porcentaje de estudiantes en riesgo y porcentaje de estudiantes excelentes.
+-- El ranking se ordena de mayor a menor nota promedio para comparar rendimiento academico.
 SELECT
     gaming_genre,
     COUNT(*) AS students,
@@ -170,7 +187,8 @@ SELECT
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
     ROUND(AVG(study_hours), 2) AS avg_study_hours,
     ROUND(AVG(addiction_score), 2) AS avg_addiction_score,
-    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct
+    ROUND(100.0 * SUM(CASE WHEN grades < 60 THEN 1 ELSE 0 END) / COUNT(*), 2) AS at_risk_pct,
+    ROUND(100.0 * SUM(CASE WHEN grades >= 90 THEN 1 ELSE 0 END) / COUNT(*), 2) AS excellent_pct
 FROM gaming_academic_performance
 GROUP BY gaming_genre
 ORDER BY avg_grade DESC;
