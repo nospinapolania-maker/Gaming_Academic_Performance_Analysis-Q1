@@ -251,6 +251,10 @@ GROUP BY sleep_band
 ORDER BY FIELD(sleep_band, '<5h', '5-7h', '7-8h', '8h+');
 
 -- Q12: Cuartiles de tiempo de reaccion
+-- Pregunta: Como cambia el rendimiento academico segun grupos de tiempo de reaccion?
+-- Primero se crea una tabla temporal llamada reaction_quartiles.
+-- En esa tabla se agrega reaction_quartile, una columna que divide a los estudiantes
+-- en 4 grupos ordenados por reaction_time_ms.
 WITH reaction_quartiles AS (
     SELECT
         student_id,
@@ -258,18 +262,24 @@ WITH reaction_quartiles AS (
         grades,
         gaming_hours,
         study_hours,
+        -- NTILE(4) reparte las filas en 4 grupos.
+        -- El ORDER BY es necesario porque define el criterio de orden:
+        -- cuartil 1 = menor tiempo de reaccion, cuartil 4 = mayor tiempo.
         NTILE(4) OVER (ORDER BY reaction_time_ms) AS reaction_quartile
     FROM gaming_academic_performance
 )
 SELECT
     reaction_quartile,
     COUNT(*) AS students,
+    -- Estos valores muestran el rango real de reaction_time_ms en cada cuartil.
     ROUND(MIN(reaction_time_ms), 2) AS min_reaction_ms,
     ROUND(MAX(reaction_time_ms), 2) AS max_reaction_ms,
+    -- Estos promedios permiten comparar rendimiento y habitos entre cuartiles.
     ROUND(AVG(grades), 2) AS avg_grade,
     ROUND(AVG(gaming_hours), 2) AS avg_gaming_hours,
     ROUND(AVG(study_hours), 2) AS avg_study_hours
 FROM reaction_quartiles
+-- Se agrupa por la columna creada en la tabla temporal.
 GROUP BY reaction_quartile
 ORDER BY reaction_quartile;
 
