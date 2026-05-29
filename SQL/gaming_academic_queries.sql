@@ -200,6 +200,8 @@ ORDER BY avg_grade DESC;
 -- Q9: Correlaciones contra calificaciones
 -- MySQL no incluye CORR() como funcion nativa; se calcula con la formula:
 -- covarianza(x,y) / (desviacion_estandar(x) * desviacion_estandar(y))
+-- La parte superior de la formula mide si dos variables se mueven juntas.
+-- La division por las desviaciones estandar normaliza el resultado entre -1 y 1.
 SELECT
     ROUND((AVG(grades * gaming_hours) - AVG(grades) * AVG(gaming_hours)) /
           NULLIF(STDDEV_POP(grades) * STDDEV_POP(gaming_hours), 0), 3) AS corr_grades_gaming,
@@ -216,6 +218,10 @@ SELECT
 FROM gaming_academic_performance;
 
 -- Q10: Perfil por nivel de estres
+-- Pregunta: Como cambian las notas y los habitos segun el nivel de estres?
+-- Esta consulta agrupa a los estudiantes por stress_level y calcula
+-- cantidad de estudiantes, nota promedio, gaming promedio, estudio promedio,
+-- sueno promedio y addiction_score promedio para cada nivel.
 SELECT
     stress_level,
     COUNT(*) AS students,
