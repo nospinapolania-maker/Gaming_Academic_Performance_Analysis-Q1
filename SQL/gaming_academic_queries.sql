@@ -235,6 +235,10 @@ GROUP BY stress_level
 ORDER BY FIELD(stress_level, 'Low', 'Medium', 'High');
 
 -- Q11: Sueno y rendimiento academico
+-- Pregunta: Como cambia el rendimiento academico segun las horas de sueno?
+-- Esta consulta agrupa a los estudiantes por banda de sueno y calcula
+-- cantidad de estudiantes, nota promedio, gaming promedio, estudio promedio
+-- y asistencia promedio para comparar rutinas de descanso.
 SELECT
     sleep_band,
     COUNT(*) AS students,
@@ -244,7 +248,7 @@ SELECT
     ROUND(AVG(attendance), 2) AS avg_attendance
 FROM gaming_academic_performance
 GROUP BY sleep_band
-ORDER BY MIN(sleep_hours);
+ORDER BY FIELD(sleep_band, '<5h', '5-7h', '7-8h', '8h+');
 
 -- Q12: Cuartiles de tiempo de reaccion
 WITH reaction_quartiles AS (
