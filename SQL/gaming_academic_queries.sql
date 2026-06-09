@@ -288,6 +288,8 @@ ORDER BY reaction_quartile;
 -- ------------------------------------------------------------
 
 -- Q13: Segmentos accionables de estudiantes
+-- Pregunta: Cuantos estudiantes hay en cada segmento de riesgo
+-- y cual es el perfil promedio de cada segmento?
 SELECT
     risk_flag AS student_segment,
     COUNT(*) AS students,
@@ -301,6 +303,8 @@ GROUP BY risk_flag
 ORDER BY students DESC;
 
 -- Q14: Riesgo por asistencia y estudio
+-- Pregunta: Como cambia el riesgo academico al combinar el nivel de asistencia
+-- y las horas de estudio de los estudiantes?
 SELECT
     CASE
         WHEN attendance < 75 THEN 'Asistencia baja'
