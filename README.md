@@ -33,10 +33,10 @@ El objetivo del proyecto es transformar un CSV crudo en un flujo analitico repro
 
 | Pagina | Nombre | Pregunta que responde |
 |--------|--------|-----------------------|
-| **P1** | Executive Overview | Como se distribuye el rendimiento academico general? |
-| **P2** | Gaming vs Study Trade-off | A partir de que intensidad de gaming baja la calificacion promedio? |
-| **P3** | Student Behavior Intelligence | Que patrones aparecen entre sueño, asistencia, dispositivos y estres? |
-| **P4** | Risk & Opportunity Segments | Que estudiantes requieren intervencion academica o seguimiento? |
+| **P1** | Executive Overview | ¿Cómo se distribuye el rendimiento academico general? |
+| **P2** | Gaming vs Study Trade-off | ¿A partir de que intensidad de gaming baja la calificacion promedio? |
+| **P3** | Student Behavior Intelligence | ¿Qué patrones aparecen entre sueño, asistencia, dispositivos y estres? |
+| **P4** | Risk & Opportunity Segments | ¿Qué estudiantes requieren intervencion academica o seguimiento? |
 
 <br/>
 
