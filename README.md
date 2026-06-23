@@ -4,8 +4,8 @@
 
 # Gaming Academic Performance - Student Behavior Intelligence
 
-**Analisis de habitos de gaming, estudio, descanso y rendimiento academico**  
-*Construido con Power Query - Excel - MySQL - Power BI-ready - SQL Analytics*
+**Analisis SQL de habitos de gaming, estudio, descanso y rendimiento academico**  
+*Proyecto por fases: Power Query - Excel - MySQL - SQL Analytics - Power BI*
 
 <br/>
 
@@ -25,11 +25,26 @@
 
 Una institucion academica quiere entender como los habitos digitales de sus estudiantes se relacionan con el rendimiento. El dataset combina horas de gaming, horas de estudio, sueño, asistencia, uso de dispositivos, tiempo de reaccion, nivel de estres y calificaciones.
 
-El objetivo del proyecto es transformar un CSV crudo en un flujo analitico reproducible: limpieza en Power Query, dataset final en Excel, consultas SQL reutilizables en MySQL y una estructura lista para construir un dashboard en Power BI.
+El objetivo del proyecto es transformar un CSV crudo en un flujo analitico reproducible: limpieza en Power Query, dataset final en Excel y consultas SQL reutilizables en MySQL para responder preguntas sobre gaming, estudio y rendimiento academico.
 
 ---
 
-## Dashboard - 4 Paginas
+## Como se divide el proyecto
+
+Este repositorio se trabaja como un caso completo de portafolio, dividido en fases:
+
+| Fase | Entregable | Estado | Enfoque |
+|------|------------|--------|---------|
+| **Proyecto 1** | SQL Analytics | En cierre | Consultas, KPIs, segmentacion, correlaciones y vistas |
+| **Proyecto 2** | Dashboard Power BI | Siguiente fase | Visualizacion ejecutiva y narrativa del analisis |
+
+El **Proyecto 1** no es otro repositorio separado. Es la parte SQL de este mismo caso: el archivo `SQL/gaming_academic_queries.sql`, apoyado por el dataset limpio, el diccionario de datos y esta documentacion.
+
+El **Proyecto 2** se construira despues usando las vistas SQL ya preparadas para Power BI.
+
+---
+
+## Blueprint del Dashboard - Proyecto 2
 
 | Pagina | Nombre | Pregunta que responde |
 |--------|--------|-----------------------|
@@ -42,7 +57,7 @@ El objetivo del proyecto es transformar un CSV crudo en un flujo analitico repro
 
 <div align="center">
 <img src="assets/dashboard_preview.svg" alt="Dashboard Preview" width="90%"/>
-<br/><sub><i>Blueprint visual para Power BI - Paleta academica navy #102A43, teal #2EC4B6 y amber #FFB703</i></sub>
+<br/><sub><i>Blueprint visual para la siguiente fase en Power BI - Paleta academica navy #102A43, teal #2EC4B6 y amber #FFB703</i></sub>
 </div>
 
 ---
@@ -174,6 +189,8 @@ Resumen rapido:
 
 ## SQL Analytics - 14 Queries Analiticas + 3 Vistas para Power BI
 
+Esta es la fase principal del **Proyecto 1**. El objetivo es demostrar capacidad para formular preguntas analiticas, escribir consultas SQL, segmentar estudiantes, calcular KPIs y dejar vistas listas para consumo posterior en Power BI.
+
 ```sql
 -- Ejemplo: calificacion promedio por banda de gaming
 SELECT
@@ -184,7 +201,7 @@ SELECT
     ROUND(AVG(addiction_score), 2) AS avg_addiction_score
 FROM gaming_academic_performance
 GROUP BY gaming_band
-ORDER BY MIN(gaming_hours);
+ORDER BY FIELD(gaming_band, '0-2h', '2-4h', '4-6h', '6-8h');
 ```
 
 | Seccion SQL | Queries | Tecnicas utilizadas |
@@ -192,7 +209,7 @@ ORDER BY MIN(gaming_hours);
 | KPIs Ejecutivos | Q1-Q4 | `AVG`, `COUNT`, `CASE WHEN`, agregaciones condicionales |
 | Rendimiento Academico | Q5-Q8 | segmentacion, ranking, performance bands |
 | Inteligencia de Comportamiento | Q9-Q12 | correlaciones calculadas, `NTILE`, agregaciones |
-| Riesgo y Calidad de Datos | Q13-Q16 | segmentos, revision de rangos, vistas para BI |
+| Riesgo y Segmentacion | Q13-Q14 | segmentos accionables, riesgo por asistencia y estudio |
 | ETL Views | 3 vistas | `CREATE OR REPLACE VIEW`, tablas listas para dashboard |
 
 Nota: en el archivo limpio de Power Query la columna aparece como `attendance (%)`. En el script SQL se usa `attendance` como nombre tecnico para evitar espacios y parentesis en las consultas.
@@ -272,7 +289,7 @@ No:
 
 Esto fue necesario porque MySQL puede generar error al leer valores numericos con coma decimal durante la importacion.
 
-### 3. Conectar a Power BI
+### 3. Preparar la siguiente fase en Power BI
 
 ```text
 Get Data -> MySQL
@@ -284,6 +301,19 @@ Importar:
   - vw_student_segments
   - vw_behavior_dashboard
 ```
+
+Este paso pertenece al **Proyecto 2**. Para cerrar el **Proyecto 1**, basta con dejar creada la tabla, ejecutar las 14 consultas y validar que las 3 vistas se generen correctamente.
+
+---
+
+## Checklist de Cierre - Proyecto 1
+
+- [ ] Tabla `gaming_academic_performance` creada en MySQL.
+- [ ] Dataset limpio importado correctamente.
+- [ ] Q1-Q14 ejecutadas sin errores.
+- [ ] Vistas `vw_kpis_academicos`, `vw_student_segments` y `vw_behavior_dashboard` creadas correctamente.
+- [ ] Insights clave revisados contra los resultados reales de SQL.
+- [ ] README actualizado con contexto, datos, metodologia, consultas e insights.
 
 ---
 
@@ -305,13 +335,13 @@ Importar:
 **Nicolás Ospina Polanía**  
 Data Analyst Jr. en formacion
 
-**Stack principal:** Power Query - Excel - Power BI - SQL/MySQL
+**Stack principal:** Power Query - Excel - SQL/MySQL - Power BI
 
 ---
 
 <div align="center">
 
-*Proyecto construido como repositorio de portafolio academico a partir de un unico dataset CSV.*
+*Proyecto construido como repositorio de portafolio por fases a partir de un unico dataset CSV.*
 
 </div>
 
