@@ -308,12 +308,12 @@ Este paso pertenece al **Proyecto 2**. Para cerrar el **Proyecto 1**, basta con 
 
 ## Checklist de Cierre - Proyecto 1
 
-- [ ] Tabla `gaming_academic_performance` creada en MySQL.
-- [ ] Dataset limpio importado correctamente.
-- [ ] Q1-Q14 ejecutadas sin errores.
-- [ ] Vistas `vw_kpis_academicos`, `vw_student_segments` y `vw_behavior_dashboard` creadas correctamente.
-- [ ] Insights clave revisados contra los resultados reales de SQL.
-- [ ] README actualizado con contexto, datos, metodologia, consultas e insights.
+- [x] Tabla `gaming_academic_performance` creada en MySQL.
+- [x] Dataset limpio importado correctamente.
+- [x] Q1-Q14 ejecutadas sin errores.
+- [x] Vistas `vw_kpis_academicos`, `vw_student_segments` y `vw_behavior_dashboard` creadas correctamente.
+- [x] Insights clave revisados contra los resultados reales de SQL.
+- [x] README actualizado con contexto, datos, metodologia, consultas e insights.
 
 ---
 
