@@ -1,1 +1,3 @@
-*.sql linguist-language=SQL
+SQL/*.sql linguist-language=SQL linguist-detectable=true
+PowerQuery/*.pq linguist-detectable=true
+PowerBI/*.dax linguist-language=DAX linguist-detectable=true
