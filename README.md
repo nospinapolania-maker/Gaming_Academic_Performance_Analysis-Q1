@@ -11,7 +11,12 @@
 
 [![Power Query](https://img.shields.io/badge/Power%20Query-ETL%20Cleaning-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white)](https://powerquery.microsoft.com/)
 [![SQL](https://img.shields.io/badge/SQL-MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![DAX](https://img.shields.io/badge/DAX-Power%20BI%20Measures-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)](https://learn.microsoft.com/power-bi/transform-model/desktop-quickstart-learn-dax-basics)
 [![Power BI](https://img.shields.io/badge/Power%20BI-Dashboard%20Blueprint-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)](https://powerbi.microsoft.com/)
+
+<br/>
+
+**Languages / Query Languages:** SQL · DAX · Power Query M
 
 <br/>
 
@@ -231,6 +236,9 @@ Gaming_Academic_Performance_Analysis-Q1/
 |
 |-- PowerQuery/
 |   `-- gaming_academic_cleaning.pq
+|
+|-- PowerBI/
+|   `-- measures.dax
 |
 |-- assets/
 |   |-- header_banner.svg

@@ -1,0 +1,8 @@
+*.sql linguist-language=SQL
+*.dax linguist-language=DAX
+*.pq linguist-language=Power Query
+
+*.csv linguist-vendored
+*.xlsx linguist-vendored
+*.svg linguist-vendored
+
