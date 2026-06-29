@@ -1,72 +1,99 @@
--- Power BI DAX Measures
--- Proyecto 2: Dashboard Power BI
--- Estas medidas se usaran sobre las vistas SQL preparadas en el Proyecto 1.
+-- ============================================================
+-- GAMING ACADEMIC PERFORMANCE - Proyecto 2
+-- DAX Measures para Dashboard Power BI
+-- Tabla base recomendada: vw_student_segments
+-- Nota: esta view es la mas parecida a la tabla original limpia,
+-- porque mantiene 1 fila = 1 estudiante.
+-- ============================================================
 
--- KPIs principales
-Total Students =
-DISTINCTCOUNT ( 'vw_student_segments'[student_id] )
+total_students =
+DISTINCTCOUNT('vw_student_segments'[student_id])
 
-Grade Average =
-AVERAGE ( 'vw_student_segments'[grades] )
 
-At-Risk Students =
-CALCULATE (
-    DISTINCTCOUNT ( 'vw_student_segments'[student_id] ),
+grade_average =
+AVERAGE('vw_student_segments'[grades])
+
+
+at_risk_students =
+CALCULATE(
+    DISTINCTCOUNT('vw_student_segments'[student_id]),
     'vw_student_segments'[grades] < 60
 )
 
-At-Risk % =
-DIVIDE (
-    [At-Risk Students],
-    [Total Students]
+
+at_risk_pct =
+DIVIDE(
+    [at_risk_students],
+    [total_students]
 )
 
-Excellent Students =
-CALCULATE (
-    DISTINCTCOUNT ( 'vw_student_segments'[student_id] ),
+
+excellent_students =
+CALCULATE(
+    DISTINCTCOUNT('vw_student_segments'[student_id]),
     'vw_student_segments'[grades] >= 90
 )
 
-Excellent % =
-DIVIDE (
-    [Excellent Students],
-    [Total Students]
+
+excellent_pct =
+DIVIDE(
+    [excellent_students],
+    [total_students]
 )
 
--- Promedios de comportamiento
-Average Gaming Hours =
-AVERAGE ( 'vw_student_segments'[gaming_hours] )
 
-Average Study Hours =
-AVERAGE ( 'vw_student_segments'[study_hours] )
+average_gaming_hours =
+AVERAGE('vw_student_segments'[gaming_hours])
 
-Average Sleep Hours =
-AVERAGE ( 'vw_student_segments'[sleep_hours] )
 
-Average Attendance =
-AVERAGE ( 'vw_student_segments'[attendance] )
+average_study_hours =
+AVERAGE('vw_student_segments'[study_hours])
 
-Average Addiction Score =
-AVERAGE ( 'vw_student_segments'[addiction_score] )
 
-Average Device Usage =
-AVERAGE ( 'vw_student_segments'[device_usage] )
+average_sleep_hours =
+AVERAGE('vw_student_segments'[sleep_hours])
 
-Average Reaction Time =
-AVERAGE ( 'vw_student_segments'[reaction_time_ms] )
 
--- Medidas reutilizables para graficos por banda o segmento
-Gaming Band Avg Grade =
-[Grade Average]
+average_attendance =
+AVERAGE('vw_student_segments'[attendance])
 
-Study Band Avg Grade =
-[Grade Average]
 
-Sleep Band Avg Grade =
-[Grade Average]
+average_addiction_score =
+AVERAGE('vw_student_segments'[addiction_score])
 
-Risk Segment Students =
-[Total Students]
 
-Performance Band Students =
-[Total Students]
+average_device_usage =
+AVERAGE('vw_student_segments'[device_usage])
+
+
+average_reaction_time =
+AVERAGE('vw_student_segments'[reaction_time_ms])
+
+
+-- ============================================================
+-- Como usar estas medidas en visuales
+-- ============================================================
+-- Para promedio de notas por banda de gaming:
+-- Eje: vw_student_segments[gaming_band]
+-- Valor: [grade_average]
+--
+-- Para promedio de notas por banda de estudio:
+-- Eje: vw_student_segments[study_band]
+-- Valor: [grade_average]
+--
+-- Para promedio de notas por banda de sueno:
+-- Eje: vw_student_segments[sleep_band]
+-- Valor: [grade_average]
+--
+-- Para estudiantes por segmento de riesgo:
+-- Eje: vw_student_segments[risk_flag]
+-- Valor: [total_students]
+--
+-- Para estudiantes por rendimiento:
+-- Eje: vw_student_segments[performance_band]
+-- Valor: [total_students]
+--
+-- Formato recomendado:
+-- at_risk_pct y excellent_pct: porcentaje
+-- promedios: 2 decimales
+-- conteos: numero entero
